@@ -26,7 +26,7 @@ jobs:
           tags: flask-login-app:test
 
       - name: Run tests inside container
-        run: docker run --rm flask-login-app:test pytest tests/
+        run: docker run --rm flask-login-app:test pytest -q --tb=short tests/
 
   trivy-scan:
     name: Security Scan with Trivy

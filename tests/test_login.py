@@ -7,7 +7,7 @@ BASE_URL = "http://localhost:5001" # As defined in the app/login.py app
 
 @pytest.fixture # Used to inject the credentials in the tests we will run (For that we'll import pytest).
 def valid_credentials():
-    return {"email": "sam.albershtein@gmail.com ", "password": "1234"} # 1234 should be a string in JSON ("") because we will compare it later in the app to a string.
+    return {"email": "sam.albershtein@gmail.com", "password": "1234"} # 1234 should be a string in JSON ("") because we will compare it later in the app to a string.
 
 
 
@@ -25,7 +25,7 @@ def test_successful_login(valid_credentials):
 
 def test_invalid_credentials():
     credentials = {"email": "notsam@gmail.com", "password": "123"}
-    response = requests.post("f{BASE_URL}/login", json = credentials)
+    response = requests.post(f"{BASE_URL}/login", json = credentials)
     assert response.status_code == 401 
     assert response.json()["error"] == "Invalid credentials" 
 
@@ -34,7 +34,7 @@ def test_invalid_credentials():
 # Test 3 - Check if we're able to login without credentials
 
 def test_missing_credentials():
-    response = requests.post("f{BASE_URL}/login", json = {})
+    response = requests.post(f"{BASE_URL}/login", json = {})
     assert response.status_code == 400 
     assert response.json()["error"] == "Missing fields"
 
@@ -42,13 +42,11 @@ def test_missing_credentials():
 
 # Test 4 - Check if we're able to login without sending json payload 
 
-def missing_payload():
+def test_missing_payload():
     response = requests.post(f"{BASE_URL}/login")
     assert response.status_code == 400 
     assert response.json()["error"] == "Missing fields" 
     # Can also use below properties like that: assert "Invalid credentials" in response.text
-
-
 
 
 ###########
