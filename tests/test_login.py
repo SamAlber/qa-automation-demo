@@ -1,7 +1,7 @@
 import pytest # Used to enable the use of @pytest.fixture 
 import requests # For making HTTP calls in tests
 
-BASE_URL = "http://localhost:5001" # As defined in the app/login.py app 
+BASE_URL = "http://app:5001" # As defined in the app/login.py app (Changed to app because that's how the hostname of the flask service is defined in the docker compose)
 
 
 
@@ -34,7 +34,8 @@ def test_invalid_credentials():
 # Test 3 - Check if we're able to login without credentials
 
 def test_missing_credentials():
-    response = requests.post(f"{BASE_URL}/login", json = {})
+    credentials = {"email": "notsam@gmail.com"}
+    response = requests.post(f"{BASE_URL}/login", json = credentials)
     assert response.status_code == 400 
     assert response.json()["error"] == "Missing fields"
 
@@ -43,9 +44,9 @@ def test_missing_credentials():
 # Test 4 - Check if we're able to login without sending json payload 
 
 def test_missing_payload():
-    response = requests.post(f"{BASE_URL}/login")
+    response = requests.post(f"{BASE_URL}/login", json = {})
     assert response.status_code == 400 
-    assert response.json()["error"] == "Missing fields" 
+    assert response.json()["error"] == "No data provided" 
     # Can also use below properties like that: assert "Invalid credentials" in response.text
 
 
