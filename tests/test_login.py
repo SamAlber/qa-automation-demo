@@ -1,7 +1,7 @@
 import pytest # Used to enable the use of @pytest.fixture 
 import requests # For making HTTP calls in tests
 
-BASE_URL = http://localhost:5001 # As defined in the app/login.py app 
+BASE_URL = "http://localhost:5001" # As defined in the app/login.py app 
 
 
 

@@ -27,7 +27,7 @@
     COPY --from=builder /app/tests/ tests/
     
     # Expose port for local dev (optional)
-    EXPOSE 5000
+    EXPOSE 5001
     
     # Run the Flask app
     CMD ["python", "app/login.py"]
