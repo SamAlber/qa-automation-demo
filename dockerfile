@@ -1,32 +1,36 @@
-# --------- Build Stage ---------
+# --- Stage 1: Builder ---
     FROM python:3.11-slim as builder
 
-    # Set working directory
     WORKDIR /app
     
-    # Copy files needed for installation
+    # Install dependencies
     COPY requirements.txt .
+    RUN pip install --upgrade pip && pip install --prefix=/install -r requirements.txt
     
-    # Install dependencies in a separate layer
-    RUN pip install --no-cache-dir -r requirements.txt
+    # Install pytest (for running tests inside container)
+    RUN pip install --prefix=/install pytest
     
-    # Copy app code for testing, etc.
+    # Copy application and test code
     COPY app/ app/
+    COPY tests/ tests/
     
-    # --------- Runtime Stage ---------
+    # --- Stage 2: Runtime ---
     FROM python:3.11-slim
     
-    # Set working directory
     WORKDIR /app
     
-    # Copy installed packages from builder
-    COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
-    COPY --from=builder /usr/local/bin /usr/local/bin
+    # Copy installed Python packages from builder
+    COPY --from=builder /install /usr/local
+    
+    # Copy app and tests
     COPY --from=builder /app/app/ app/
+    COPY --from=builder /app/tests/ tests/
     
-    # Expose Flask port
-    EXPOSE 5001
+    # Expose port for local dev (optional)
+    EXPOSE 5000
     
-    # Run Flask app
+    # Run the Flask app
     CMD ["python", "app/login.py"]
-    
+
+    # Using --prefix=/install gives you full control over what you copy from one stage to the next.
+    # No need to "remember" or "guess" paths — you defined them yourself.
