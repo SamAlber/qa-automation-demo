@@ -104,18 +104,117 @@ This project demonstrates a real-world **QA Automation testing workflow** using:
 
 ### 🕰️ Earlier Setup (Dockerfiles Inside `app/` and `tests/`)
 
-- We had Dockerfiles under `./app` and `./tests`, so the build context was limited.
-- Docker only saw files within those folders — not the whole project.
-- `.dockerignore` was **not strictly needed**.
+* Previously, each service had its own Dockerfile placed inside its folder (e.g., `app/`, `tests/`).
+* The Docker Compose `build.context` was set to these specific folders:
 
-### 📦 Current Setup (Dockerfiles in Root)
+  ```yaml
+  build:
+    context: ./app
+    dockerfile: Dockerfile
+  ```
+* As a result, **Docker only saw the contents of that subdirectory**, so unrelated files (like `.git`, `node_modules`, etc.) were **automatically excluded**.
+* In that setup, a `.dockerignore` in the root wasn’t strictly necessary.
 
-- Dockerfiles are in the root.
-- Build context is `.` (the entire project directory).
+---
 
-❌ This means **everything** (like `.git`, `tests/`, `.vscode`, etc.) is sent during the build unless excluded.
+### 📦 Current Setup (Dockerfiles in Project Root)
 
-✅ We now **do need `.dockerignore`** again to avoid bloated images and slower builds.
+* Now both `Dockerfile.app` and `Dockerfile.test` live in the **root directory**.
+* The build context for each service is now set to `.`:
+
+  ```yaml
+  build:
+    context: .
+    dockerfile: Dockerfile.app
+  ```
+* This means **the entire project directory is sent to the Docker daemon during build**.
+
+❌ So by default, everything — including:
+
+* `.git/`
+* `tests/`
+* `.vscode/`
+* temp files, logs, large datasets —
+  is included in the build context.
+
+✅ That’s why we **need a `.dockerignore`** again:
+
+* To reduce build context size
+* To avoid copying irrelevant files into the image
+* To speed up builds and keep layers clean
+
+This ensures efficient and secure Docker image builds when using root-level Dockerfiles.
+
+---
+
+## ✅ GitHub Actions CI Workflow Explained
+
+This project uses **GitHub Actions** to automate QA and security testing with every code change.
+
+### 🔁 Triggered On
+
+```yaml
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+```
+
+* The workflow runs automatically when someone pushes to `main` or opens a pull request targeting `main`.
+
+### ⚙️ Job: QA and Security Test
+
+```yaml
+jobs:
+  qa-and-security-test:
+    runs-on: ubuntu-latest
+```
+
+* Spins up a fresh Ubuntu virtual machine for testing.
+
+### 🔨 Step-by-Step Breakdown
+
+#### 1. **Checkout the Code**
+
+```yaml
+- uses: actions/checkout@v4
+```
+
+* Pulls the repository code into the VM so tests can run on it.
+
+#### 2. **Start Docker Compose Stack**
+
+```yaml
+- uses: hoverkraft-tech/compose-action@v2
+  with:
+    compose-file: docker-compose.yml
+    up-flags: "--build"
+```
+
+* This uses a **third-party GitHub Action** that wraps the Docker Compose CLI commands.
+* It automatically runs:
+
+  ```bash
+  docker compose -f docker-compose.yml up --build -d
+  ```
+* This builds and starts your services in the background.
+
+#### 3. **Wait for Test Container to Finish**
+
+```bash
+while docker compose ps test | grep -q "Up"; do sleep 1; done
+```
+
+* Polls every second until the `test` container (which runs `pytest`) completes execution.
+
+#### 4. **Display Test Output**
+
+```yaml
+- run: docker compose logs test
+```
+
+* Prints the logs of the `test` container, typically including pytest results.
 
 ---
 
@@ -173,3 +272,6 @@ This project simulates a production-like QA flow:
 🧑‍💻 Author  
 Samuel Albershtein  
 📫 www.samuelalber.com
+
+
+
