@@ -200,6 +200,15 @@ jobs:
   ```
 * This builds and starts your services in the background.
 
+✅ **Note:** You could also skip this Action and just use a plain `run:` step:
+
+```yaml
+- name: Run Docker Compose manually
+  run: docker compose -f docker-compose.yml up --build -d
+```
+
+* **Using `uses:` is optional.** It's just a convenience wrapper to reduce boilerplate.
+
 #### 3. **Wait for Test Container to Finish**
 
 ```bash
@@ -272,6 +281,4 @@ This project simulates a production-like QA flow:
 🧑‍💻 Author  
 Samuel Albershtein  
 📫 www.samuelalber.com
-
-
 
