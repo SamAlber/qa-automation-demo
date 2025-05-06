@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt 
 
 # Copy source code
-COPY . . 
+COPY /app . 
 
 # Expose app port (Not required for the app to work, but useful for documentation)
 EXPOSE 5001 
