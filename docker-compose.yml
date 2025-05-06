@@ -1,7 +1,8 @@
 services:
   app:
     build:
-      context: Dockerfile.app
+      context: .
+      dockerfile: Dockerfile.app
     container_name: flask_app
     image: flask-login-app
     ports:
@@ -9,6 +10,7 @@ services:
 
   test:
     build:
-      context: Dockerfile.test
+      context: .
+      dockerfile: Dockerfile.test
     depends_on:
       - app
