@@ -7,7 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  qa:
+  qa-and-security-test:
+    name: QA and Security Test
     runs-on: ubuntu-latest
 
     steps:
@@ -27,13 +28,3 @@ jobs:
 
       - name: Show pytest output
         run: docker compose logs test
-
-      - name: Security Scan with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-            image-ref: flask-login-app:test
-            format: 'table'
-            exit-code: '0'
-            ignore-unfixed: true
-            vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH'

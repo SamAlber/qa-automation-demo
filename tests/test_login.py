@@ -45,7 +45,7 @@ def test_missing_credentials():
 
 def test_missing_payload():
     response = requests.post(f"{BASE_URL}/login", json = {})
-    assert response.status_code == 400 
+    assert response.status_code == 400
     assert response.json()["error"] == "No data provided" 
     # Can also use below properties like that: assert "Invalid credentials" in response.text
 
