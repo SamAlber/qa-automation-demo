@@ -1,18 +1,14 @@
 services:
   app:
-    build:                            # Builds the Docker image from your local context.
-      context: .
-    container_name: flask_app 
-    image: flask-login-app:test       # Name of the image to be built
+    build:
+      context: ./app
+    container_name: flask_app
+    image: flask-login-app
     ports:
       - "5001:5001"
-    command: python app/login.py
 
   test:
-    image: flask-login-app:test       # Reuse the already-built image
+    build:
+      context: ./tests
     depends_on:
       - app
-    command: >
-      sh -c "sleep 5 && pytest -v tests/"   
-  
-    # Overrides the Dockerfile’s CMD
