@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
-    container_name: flask_app
-    image: flask-login-app
     ports:
       - "5001:5001"
 
