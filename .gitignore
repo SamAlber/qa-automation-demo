@@ -1,1 +1,23 @@
-.vscode
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.mypy_cache/
+.pytest_cache/
+.tox/
+.cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Editors/IDEs
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
